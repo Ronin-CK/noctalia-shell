@@ -36,9 +36,9 @@ Singleton {
   readonly property string defaultVideosDirectory: Quickshell.env("HOME") + "/Videos"
   readonly property string defaultWallpapersDirectory: Quickshell.env("HOME") + "/Pictures/Wallpapers"
 
-  // Signal emitted when settings are loaded after startupcale changes
   signal settingsLoaded
   signal settingsSaved
+  signal settingsReloaded
 
   // -----------------------------------------------------
   // -----------------------------------------------------
@@ -121,6 +121,9 @@ Singleton {
         root.settingsLoaded();
 
         upgradeSettings();
+      } else {
+        Logger.d("Settings", "Settings reloaded from external file change");
+        root.settingsReloaded();
       }
     }
     onLoadFailed: function (error) {
@@ -179,6 +182,7 @@ Singleton {
       property real capsuleOpacity: 1.0
       property string capsuleColorKey: "none"
       property int widgetSpacing: 6
+      property int contentPadding: 2
       property real fontScale: 1.0
 
       // Bar background opacity settings
@@ -313,17 +317,11 @@ Singleton {
       property real fontDefaultScale: 1.0
       property real fontFixedScale: 1.0
       property bool tooltipsEnabled: true
+      property bool boxBorderEnabled: false
       property real panelBackgroundOpacity: 0.93
       property bool panelsAttachedToBar: true
       property string settingsPanelMode: "attached" // "centered", "attached", "window"
-      // Details view mode persistence for panels
-      property string wifiDetailsViewMode: "grid"   // "grid" or "list"
-      property string bluetoothDetailsViewMode: "grid" // "grid" or "list"
-      // Persist the last-opened view for the unified network panel: "wifi" | "ethernet"
-      property string networkPanelView: "wifi"
-      // Bluetooth available devices list: hide items without a name
-      property bool bluetoothHideUnnamedDevices: false
-      property bool boxBorderEnabled: false
+      property bool settingsPanelSideBarCardStyle: false
     }
 
     // location
@@ -556,6 +554,7 @@ Singleton {
       property bool airplaneModeEnabled: false
       property bool bluetoothRssiPollingEnabled: false  // Opt-in Bluetooth RSSI polling (uses bluetoothctl)
       property int bluetoothRssiPollIntervalMs: 60000 // Polling interval in milliseconds for RSSI queries
+      property string networkPanelView: "wifi"
       property string wifiDetailsViewMode: "grid"   // "grid" or "list"
       property string bluetoothDetailsViewMode: "grid" // "grid" or "list"
       property bool bluetoothHideUnnamedDevices: false
@@ -663,6 +662,7 @@ Singleton {
       property list<string> mprisBlacklist: []
       property string preferredPlayer: ""
       property bool volumeFeedback: false
+      property string volumeFeedbackSoundFile: ""
     }
 
     // brightness
@@ -670,6 +670,8 @@ Singleton {
       property int brightnessStep: 5
       property bool enforceMinimum: true
       property bool enableDdcSupport: false
+      property list<var> backlightDeviceMappings: []
+      // Format: [{ "output": "eDP-1", "device": "/sys/class/backlight/intel_backlight" }]
     }
 
     property JsonObject colorSchemes: JsonObject {
@@ -717,6 +719,16 @@ Singleton {
     // plugins
     property JsonObject plugins: JsonObject {
       property bool autoUpdate: false
+    }
+
+    // idle management
+    property JsonObject idle: JsonObject {
+      property bool enabled: false
+      property int screenOffTimeout: 600    // seconds, 0 = disabled
+      property int lockTimeout: 660         // seconds, 0 = disabled
+      property int suspendTimeout: 1800     // seconds, 0 = disabled
+      property int fadeDuration: 5       // seconds of fade-to-black before action fires
+      property string customCommands: "[]" // JSON array of {timeout, command}
     }
 
     // desktop widgets

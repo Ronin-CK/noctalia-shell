@@ -75,6 +75,9 @@ Item {
   property bool cachedShouldAnimateWidth: false
   property bool cachedShouldAnimateHeight: false
 
+  // Whether blur should be applied behind this panel
+  property bool blurEnabled: true
+
   // Close with escape key
   property bool closeWithEscape: true
 
@@ -155,6 +158,8 @@ Item {
   function open(buttonItem, buttonName) {
     // Reset immediate close flag to ensure animations work properly
     PanelService.closedImmediately = false;
+    // Reset to default - fixes panel being stuck in one position
+    root.useButtonPosition = false;
 
     if (!buttonItem && buttonName) {
       // Check if buttonName is actually a point object (click coordinates)

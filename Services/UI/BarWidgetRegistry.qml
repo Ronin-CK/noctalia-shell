@@ -183,7 +183,11 @@ Singleton {
                                     "hideWhenOff": false
                                   },
                                   "Launcher": {
+                                    "useDistroLogo": false,
                                     "icon": "rocket",
+                                    "customIconPath": "",
+                                    "colorizeSystemIcon": "none",
+                                    "enableColorization": false,
                                     "iconColor": "none"
                                   },
                                   "MediaMini": {
@@ -221,7 +225,7 @@ Singleton {
                                     "iconColor": "error"
                                   },
                                   "Settings": {
-                                    "iconColor": "non"
+                                    "iconColor": "none"
                                   },
                                   "Spacer": {
                                     "width": 20
